@@ -17,7 +17,7 @@ app = FastAPI()
 
 # landing Fucntion
 @app.get("/")
-def LandingPage ():
+def Root ():
     message = "Welcome to the API landing- it is working"
     return {'message' : message, "status" : "success"}
 
