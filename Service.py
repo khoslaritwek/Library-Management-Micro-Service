@@ -9,7 +9,7 @@ warnings.filterwarnings('ignore')
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo
+from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo
 from objects.user import User
 
 # initiate web app
