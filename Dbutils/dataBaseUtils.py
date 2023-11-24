@@ -87,6 +87,21 @@ def GetUserinfo (userName:str, dbPath :str = 'mydatabase.db'):
     else:
        return ("fail", "")
     
+# Implementation of Signin Functionality
+def SignIn(userName:str, password:str, dbPath = "mydatabase.db"):
+   # make query to the DB for username
+   conn = sqlite3.connect('mydatabase.db')
+   cursor = conn.cursor()
+   cursor.execute("SELECT name, password FROM allUsers WHERE name=?", (userName,))
+   result = cursor.fetchone()
+   conn.close()
+
+   if not result:
+      return {"status" : "fail", "message" : "user does not exit in db"}
+   elif result and (result[1] != password):
+      return {"status" : "fail", "message" : "wrong password"}
+   elif result and (result[1] == password):
+    return {"status" : "success", "message" : "login successful"}
 
 if __name__ == "__main__":
    CreateDb()

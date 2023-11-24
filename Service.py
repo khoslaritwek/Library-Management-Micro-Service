@@ -9,7 +9,7 @@ warnings.filterwarnings('ignore')
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo
+from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn
 from objects.user import User
 
 # initiate web app
@@ -47,6 +47,12 @@ def CreateUser(user : User):
         "user": userRespose,
         "status" : "success"
         }
+
+# Endpoint for user Signing currently serves as a validator for password only
+@app.post("/signin")
+def UserSigning(userName :str, password: str):
+    return SignIn(userName=userName, password=password)
+
 
 @app.post("/user/{name}")
 def GetUserInfoByName(name:str):
