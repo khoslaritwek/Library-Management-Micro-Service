@@ -9,8 +9,9 @@ warnings.filterwarnings('ignore')
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn
+from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn, AddBook
 from objects.user import User
+from objects.books import Book
 import json
 
 # initiate web app
@@ -83,3 +84,26 @@ def GetUserInfoByName(adminUserName:str, password:str, userId:str):
         return {"status" : "sucess", "userdata": QueryResults}
     else:
         return {"status" : "fail", "message" : "User does not exists in the DB"}
+
+# This Function will allow the super user to add a book in the library
+@app.post("/admin/addBook")
+def AdminAddsBook(adminUserName :str, adminPassword : str, book :Book):
+    # from super users get credentials
+    superUserFile = "credentials/superUsers.json"
+    with open(superUserFile, "r") as f:
+        superUsers = json.load(f)
+    
+    if adminUserName not in superUsers.keys():
+        return {"status" : "fail", "message" : "Unauthorized access"}
+    
+    # If call was made from a super user verify the password
+    signinMessage = SignIn(userName=adminUserName, password=adminPassword)
+    if signinMessage["status"] != "success":
+        return signinMessage
+    
+    # admin can now Add book
+    try:
+        mesage = AddBook(book=book)
+        return mesage
+    except:
+        return {"status" : "fail", "message" : "something went wrong, {} book not added".format(book.title)}

@@ -11,7 +11,7 @@ class Book(BaseModel):
     pageCount       : int
     isbn            : str
     language        : str
-    genere          : str
+    genre          : str
     isIssued        : bool = False
     issuedDate      : str  = None
     issueeEmail     : str  = None 

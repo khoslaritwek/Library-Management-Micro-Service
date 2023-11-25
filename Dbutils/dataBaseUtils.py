@@ -10,7 +10,7 @@ import sqlite3
 from pydantic import BaseModel
 from typing import Optional
 from objects.user import User
-
+from objects.books import Book
 
 # A Function for creating Users db, in case a db exists recalling this
 # Function will create a new db, new fileds can be added here
@@ -102,18 +102,64 @@ def SignIn(userName:str, password:str, dbPath = "mydatabase.db"):
       return {"status" : "fail", "message" : "wrong password"}
    elif result and (result[1] == password):
     return {"status" : "success", "message" : "login successful"}
+   
+
+#######################################################################
+# Note: This Section contains Functionality for handling entity Book  #
+#######################################################################
+
+# Function for adding a Book
+def AddBook(book : Book, dbPath :str = 'mydatabase.db'):
+   conn = sqlite3.connect(dbPath)
+   cursor = conn.cursor()
+
+    # for simplicity and avoiding to create a new function adding table creation command here
+    # if the table already exists in the Db command will be by passed
+   cursor.execute('''
+            CREATE TABLE IF NOT EXISTS all_books (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT,
+                author TEXT,
+                publishedDate TEXT,
+                pageCount INTEGER,
+                isbn TEXT,
+                language TEXT,
+                genre TEXT,
+                isIssued INTEGER,
+                issuedDate TEXT,
+                issueeEmail TEXT
+            )
+        ''')
+    
+    # now with done and the pydantic object at hand add books
+   cursor.execute('''
+            INSERT INTO all_books
+            (title, author, publishedDate, pageCount, isbn, language, genre, isIssued, issuedDate, issueeEmail)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            book.title,
+            book.author,
+            book.publishedDate,
+            book.pageCount,
+            book.isbn,
+            book.language,
+            book.genre,
+            int(book.isIssued),
+            book.issuedDate,
+            book.issueeEmail,
+        ))
+    
+   conn.commit()
+   conn.close()
+   return {"status" : "success", "message" : "Book {} has been added Successfully!!".format(book.title)}
 
 if __name__ == "__main__":
    CreateDb()
-
    # Define a Pydantic object
    user = User(name='RitwekMahan-123', email="ritwekMan@gmail.com", password = '123456', gender= "male")
-
    # Insert into db
    AddEntery2Db(user=user)
-
    # Get all user list
    print(GetAllUserNames())
-
    # get info about one user
    print(GetUserinfo(userName='Ritwek'))
