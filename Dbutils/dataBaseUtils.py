@@ -102,7 +102,24 @@ def SignIn(userName:str, password:str, dbPath = "mydatabase.db"):
       return {"status" : "fail", "message" : "wrong password"}
    elif result and (result[1] == password):
     return {"status" : "success", "message" : "login successful"}
+
+# A Function that returns the list of all unique books and genere
+def BooksAndGener(dbPath = "mydatabase.db"):
+   conn = sqlite3.connect(dbPath)
+   cursor = conn.cursor()
+   cursor.execute("SELECT DISTINCT title, genre FROM all_books")
+   unique_books = cursor.fetchall()
+
+   response = {"status" : "success", "books" : []}
+   for mem in unique_books:
+      book, genre = mem
+      response["books"].append({"title" : book, "genre" : genre})
+   conn.close()
    
+   return response
+
+
+
 
 #######################################################################
 # Note: This Section contains Functionality for handling entity Book  #

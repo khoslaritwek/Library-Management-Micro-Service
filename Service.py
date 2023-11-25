@@ -9,7 +9,7 @@ warnings.filterwarnings('ignore')
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn, AddBook
+from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn, AddBook, BooksAndGener
 from objects.user import User
 from objects.books import Book
 import json
@@ -59,6 +59,15 @@ def UserSigning(userName :str, password: str):
 def GetUserNameList():
     userList = GetAllUserNames()
     return {"status" : "success", "Users" : userList}
+
+# API endpoint for listing all books and genres
+@app.get("/user/listAllBooks")
+def ListAllBooks():
+    try :
+        return BooksAndGener()
+    except:
+        return {"status" : "fail", "mesage":"Something went wrong"}
+
 
 # This is an admin level functionality now
 # Admin can see info all other user except their passwords
