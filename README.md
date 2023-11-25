@@ -10,9 +10,16 @@ Micro Service Codes for Library Management
 
 ## This is implemented till now
 1. User Class and Functionality to create user; users with same user name or email will not be created.
-2. Functionality for user to signin into his account. This will be used by super user to add books in librarys and do operations.
-3. Endpoint for getting information for a use, but I guess this should restricted to super user only but being lazzy here.
-4. Endpoint to list all users
+2. Functionality for user to signin into his account. This will be used in services that requires you to authenticate yourself.
+3. Endpoint for getting information for a use, but this is restricted to super user admin whose password is obviously is password
+4. From this commit onwards seperated user functions from admin functions.
+
+## API endpoints
+* / -> This is landing page, this will serve as a check if the service is up or not.
+* /user/createUser -> API endpoint for User creation.
+* /user/signin     -> API endpoint for user to signing to his account.
+* /user/listusers  -> This is the endpoint to look all users in the system, this is currently public and all users can userId of other users.
+* /admin/getuserinfo/{userId}  -> An admin level functionality that requires Admin level user and access details for a given userId except their passwords.
 
 
 ### PS: Ill be glad if this code help you!

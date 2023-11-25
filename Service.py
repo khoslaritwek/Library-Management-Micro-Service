@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from typing import Optional
 from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn
 from objects.user import User
+import json
 
 # initiate web app
 app = FastAPI()
@@ -18,7 +19,7 @@ app = FastAPI()
 # landing Fucntion
 @app.get("/")
 def Root ():
-    message = "Welcome to the API landing- it is working"
+    message = "Welcome to the Library Managment Micoservice: The service is up and running!"
     return {'message' : message, "status" : "success"}
 
 # Function that creates users
@@ -49,21 +50,36 @@ def CreateUser(user : User):
         }
 
 # Endpoint for user Signing currently serves as a validator for password only
-@app.post("/signin")
+@app.post("/user/signin")
 def UserSigning(userName :str, password: str):
     return SignIn(userName=userName, password=password)
-
-
-@app.post("/user/{name}")
-def GetUserInfoByName(name:str):
-    status, QueryResults = GetUserinfo(userName=name)
-
-    if status == "success":
-        return {"status" : "sucess", "userdata": QueryResults}
-    else:
-        return {"status" : "fail", "message" : "User does not exists in the DB"}
 
 @app.get("/user/listUsers")
 def GetUserNameList():
     userList = GetAllUserNames()
     return {"status" : "success", "Users" : userList}
+
+# This is an admin level functionality now
+# Admin can see info all other user except their passwords
+@app.post("/admin/getuserinfo/{userId}")
+def GetUserInfoByName(adminUserName:str, password:str, userId:str):
+    # from super users get credentials
+    superUserFile = "credentials/superUsers.json"
+    with open(superUserFile, "r") as f:
+        superUsers = json.load(f)
+    
+    if adminUserName not in superUsers.keys():
+        return {"status" : "fail", "message" : "Unauthorized access"}
+    
+    # If call was made from a super user verify the password
+    signinMessage = SignIn(userName=adminUserName, password=password)
+    if signinMessage["status"] != "success":
+        return signinMessage
+
+    # now the flow can proceed normally
+    status, QueryResults = GetUserinfo(userName=userId)
+
+    if status == "success":
+        return {"status" : "sucess", "userdata": QueryResults}
+    else:
+        return {"status" : "fail", "message" : "User does not exists in the DB"}
