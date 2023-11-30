@@ -75,7 +75,7 @@ def GetAllUserNames(dbPath :str = 'mydatabase.db'):
 
 # Function for retriving information of a user from DB
 def GetUserinfo (userName:str, dbPath :str = 'mydatabase.db'):
-    conn = sqlite3.connect('mydatabase.db')
+    conn = sqlite3.connect(dbPath)
     cursor = conn.cursor()
 
     cursor.execute("SELECT name, email, gender FROM allUsers WHERE name=?", (userName,))
@@ -90,7 +90,7 @@ def GetUserinfo (userName:str, dbPath :str = 'mydatabase.db'):
 # Implementation of Signin Functionality
 def SignIn(userName:str, password:str, dbPath = "mydatabase.db"):
    # make query to the DB for username
-   conn = sqlite3.connect('mydatabase.db')
+   conn = sqlite3.connect(dbPath)
    cursor = conn.cursor()
    cursor.execute("SELECT name, password FROM allUsers WHERE name=?", (userName,))
    result = cursor.fetchone()
@@ -119,7 +119,25 @@ def BooksAndGener(dbPath = "mydatabase.db"):
    return response
 
 
+# Functionality for updating user Password
+def UpadateUserPassowrd (userName:str, newPassword:str, dbPath = "mydatabase.db"):
+   try:
+      conn = sqlite3.connect(dbPath)
+      cursor = conn.cursor()
+      # First check if even user exists in the DB or not
+      cursor.execute("SELECT name FROM allUsers WHERE name=?", (userName,))
+      result = cursor.fetchone()
+      if not result:
+         return {"status" : "fail", "message" : "user does not exit in db"}
+      
+      # Now update Password
+      cursor.execute("UPDATE allUsers SET password = ? WHERE name = ?", (newPassword, userName))
 
+      conn.commit()
+      conn.close()
+      return {"status" : "success", "message" : "Password for {} updated successfully".format(userName)}
+   except:
+      return {"status" : "failed", "message" : "something went wrong"}
 
 #######################################################################
 # Note: This Section contains Functionality for handling entity Book  #

@@ -14,7 +14,7 @@ Micro Service Codes for Library Management
 3. Endpoint for getting information for a use, but this is restricted to super user admin whose password is obviously is password
 4. From this commit onwards seperated user functions from admin functions.
 5. Functionality for Super user to add a book added, note all books are trearted as seprate entities, this will be helpful to know which user has accquired which book.
-6. User can see all the unique books in the library
+6. User can see all the unique books in the library.
 
 ## API endpoints
 * / -> This is landing page, this will serve as a check if the service is up or not.
@@ -24,6 +24,7 @@ Micro Service Codes for Library Management
 * /admin/getuserinfo/{userId}  -> An admin level functionality that requires Admin level user and access details for a given userId except their passwords.
 * /admin/addBook   -> Endpoint for admin level user to add a book to the library.
 * /user/listAllBooks -> API Endpoint that list the title and genre of all the unique books available in the library.
+* /user/updatePassowrd -> Functionality for updating user password.
 
 
 ### PS: Ill be glad if this code help you!

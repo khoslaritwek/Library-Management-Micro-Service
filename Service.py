@@ -9,7 +9,7 @@ warnings.filterwarnings('ignore')
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn, AddBook, BooksAndGener
+from Dbutils.dataBaseUtils import AddEntery2Db, GetAllUserNames, GetUserinfo, SignIn, AddBook, BooksAndGener, UpadateUserPassowrd
 from objects.user import User
 from objects.books import Book
 import json
@@ -60,6 +60,21 @@ def GetUserNameList():
     userList = GetAllUserNames()
     return {"status" : "success", "Users" : userList}
 
+# Function for updating User Password
+@app.post("/user/updatePassword")
+def UpdatePassword(userName:str, currentPassword : str, newPassword : str, confirmedPassword :str):
+    # if newPassword is not same current password exit out
+    if newPassword != confirmedPassword:
+        return {"status":"fail", "message" : "new password doesnt match the confirmed new password"}
+
+    # make user Signing
+    signinMessage = SignIn(userName=userName, password=currentPassword)
+    if signinMessage["status"] != "success":
+        return signinMessage
+    
+    result = UpadateUserPassowrd(userName=userName,newPassword=newPassword)
+    return result
+
 # API endpoint for listing all books and genres
 @app.get("/user/listAllBooks")
 def ListAllBooks():
@@ -67,7 +82,6 @@ def ListAllBooks():
         return BooksAndGener()
     except:
         return {"status" : "fail", "mesage":"Something went wrong"}
-
 
 # This is an admin level functionality now
 # Admin can see info all other user except their passwords
